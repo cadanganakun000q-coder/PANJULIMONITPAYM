@@ -6,6 +6,11 @@
   <title>Jostore - Layanan Unlock Roblox</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -22,13 +27,11 @@
 </head>
 <body class="bg-[#0a0a0d] text-gray-100 min-h-screen p-4 md:p-8 flex justify-center items-center relative overflow-x-hidden">
 
-  <!-- Glow Background Accent -->
   <div class="fixed -top-40 -left-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
   <div class="fixed -bottom-40 -right-40 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
   <div class="max-w-md w-full bg-[#121218]/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-amber-500/30 p-6 md:p-8 relative gold-border-glow z-10">
     
-    <!-- Brand Header with Logo -->
     <div class="flex flex-col items-center text-center pb-6 border-b border-amber-500/20 mb-6">
       <div class="relative mb-3">
         <div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-tr from-amber-600 via-yellow-300 to-amber-700 shadow-lg shadow-amber-500/20">
@@ -42,25 +45,20 @@
       <h1 class="text-2xl font-black tracking-wider gold-gradient-text">JOSTORE</h1>
       <p class="text-xs text-amber-200/60 font-medium tracking-wide">ROBLOX UNLOCK CAPTCHA & BIOMETRIC</p>
       
-      <!-- Store Status Badge -->
       <div id="statusStoreBadge" class="mt-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-amber-500/10 text-amber-300 border border-amber-500/30">
         ● Store ONLINE
       </div>
     </div>
 
-    <!-- Offline Store Notice -->
     <div id="offlineNotice" class="hidden text-center py-10 space-y-3">
       <i class="fa-solid fa-moon text-4xl text-amber-500/40 animate-pulse"></i>
       <h2 class="text-lg font-bold text-amber-200">Layanan Sedang Offline</h2>
       <p class="text-xs text-gray-400">Admin sedang tidak aktif bertugas. Silakan pesan kembali saat status toko kembali Online.</p>
     </div>
 
-    <!-- App Body Container -->
     <div id="appBody" class="space-y-6">
 
-      <!-- STEP 1: FORM DATA AKUN & LAYANAN -->
       <div id="stepForm" class="space-y-5">
-        
         <div>
           <label class="block text-xs font-semibold text-amber-300/80 mb-2 uppercase tracking-wider">1. Data Akun Roblox</label>
           <div class="space-y-3">
@@ -77,9 +75,7 @@
 
         <div>
           <label class="block text-xs font-semibold text-amber-300/80 mb-2 uppercase tracking-wider">2. Pilih Jenis Layanan</label>
-          <div class="space-y-2.5" id="serviceContainer">
-            <!-- Populated via JS -->
-          </div>
+          <div class="space-y-2.5" id="serviceContainer"></div>
         </div>
 
         <div>
@@ -98,7 +94,6 @@
           </div>
         </div>
 
-        <!-- Price Summary Card -->
         <div class="bg-[#0a0a0d] p-4 rounded-xl border border-amber-500/20 space-y-2">
           <div class="flex justify-between text-xs text-gray-400">
             <span>Layanan Dipilih:</span>
@@ -115,7 +110,6 @@
         </button>
       </div>
 
-      <!-- STEP 2: QRIS PAYMENT & PROOF UPLOAD -->
       <div id="stepPayment" class="hidden space-y-5 text-center">
         <button onclick="backToForm()" class="text-xs text-amber-400 hover:underline inline-flex items-center mb-1">
           <i class="fa-solid fa-arrow-left mr-1"></i> Ubah Data Akun / Layanan
@@ -130,7 +124,6 @@
             </div>
           </div>
 
-          <!-- Download Button -->
           <a id="btnDownloadQris" href="#" download="QRIS_Jostore.png" class="inline-flex items-center space-x-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-2 rounded-lg border border-amber-500/30 transition">
             <i class="fa-solid fa-download"></i>
             <span>Download Gambar QRIS</span>
@@ -152,9 +145,7 @@
         </button>
       </div>
 
-      <!-- STEP 3: WAITING & UNLOCK PROOF VIEW -->
       <div id="stepWaiting" class="hidden text-center py-4 space-y-5">
-        
         <div id="statusBox" class="bg-amber-950/20 border border-amber-500/40 p-5 rounded-2xl space-y-3">
           <div id="statusIcon" class="inline-block p-3 bg-amber-500/10 rounded-full text-amber-400">
             <i class="fa-solid fa-spinner fa-spin text-3xl"></i>
@@ -165,7 +156,6 @@
           </p>
         </div>
 
-        <!-- Result Screenshot Section -->
         <div id="resultBox" class="hidden bg-[#0a0a0d] p-4 rounded-2xl border border-green-500/40 space-y-3">
           <div class="flex items-center justify-between text-left">
             <div>
@@ -191,7 +181,6 @@
     </div>
   </div>
 
-  <!-- Modal Popup Zoom Image -->
   <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4" onclick="closeImageModal()">
     <div class="relative max-w-3xl w-full max-h-screen flex flex-col items-center">
       <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white text-lg bg-gray-800 p-2 rounded-full border border-gray-700">
@@ -202,7 +191,23 @@
   </div>
 
   <script>
-    const DEFAULT_CONFIG = {
+    // Konfigurasi Firebase Proyek Anda (jooprojek-b3600)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPdJfg7aVgfkpYVVb8vzMFTEcdsmUFS7M",
+      authDomain: "jooprojek-b3600.firebaseapp.com",
+      projectId: "jooprojek-b3600",
+      storageBucket: "jooprojek-b3600.firebasestorage.app",
+      messagingSenderId: "269845552323",
+      appId: "1:269845552323:web:48e16ee5238181a5885676",
+      measurementId: "G-45GNG4VE7J"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    let currentConfig = {
       isStoreOnline: true,
       qrisImage: "https://via.placeholder.com/300x300?text=QRIS+Jostore+AllPayment",
       services: {
@@ -213,25 +218,35 @@
     };
 
     let selectedServiceKey = "beranda";
+    let activeOrderData = null;
 
-    function getConfig() {
-      const saved = localStorage.getItem('jostore_config');
-      return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
-    }
+    db.collection("jostore").doc("config").onSnapshot((doc) => {
+      if (doc.exists) {
+        currentConfig = doc.data();
+        initBuyerAppUI();
+      }
+    });
 
-    function getActiveOrder() {
-      const saved = localStorage.getItem('jostore_active_order');
-      return saved ? JSON.parse(saved) : null;
-    }
+    db.collection("jostore").doc("activeOrder").onSnapshot((doc) => {
+      if (doc.exists) {
+        activeOrderData = doc.data();
+        if (activeOrderData && activeOrderData.status && activeOrderData.status !== 'reset') {
+          showStepWaiting(activeOrderData);
+        } else {
+          // Jika di-reset, kembalikan ke form
+          document.getElementById('stepWaiting').classList.add('hidden');
+          document.getElementById('stepPayment').classList.add('hidden');
+          document.getElementById('stepForm').classList.remove('hidden');
+        }
+      }
+    });
 
-    function initBuyerApp() {
-      const config = getConfig();
-
+    function initBuyerAppUI() {
       const offlineNotice = document.getElementById('offlineNotice');
       const appBody = document.getElementById('appBody');
       const statusBadge = document.getElementById('statusStoreBadge');
 
-      if (!config.isStoreOnline) {
+      if (!currentConfig.isStoreOnline) {
         statusBadge.className = "mt-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-red-950/40 text-red-400 border border-red-500/30";
         statusBadge.innerHTML = "● Store OFFLINE";
         offlineNotice.classList.remove('hidden');
@@ -244,9 +259,8 @@
         appBody.classList.remove('hidden');
       }
 
-      // Validasi layanan aktif
-      if (!config.services[selectedServiceKey] || !config.services[selectedServiceKey].active) {
-        const activeKeys = Object.keys(config.services).filter(k => config.services[k].active);
+      if (!currentConfig.services[selectedServiceKey] || !currentConfig.services[selectedServiceKey].active) {
+        const activeKeys = Object.keys(currentConfig.services).filter(k => currentConfig.services[k].active);
         if (activeKeys.length > 0) {
           selectedServiceKey = activeKeys[0];
         }
@@ -255,24 +269,16 @@
       renderServiceCards();
       updateSummary();
 
-      const qrisImg = document.getElementById('qrisImageDisplay');
-      const downloadBtn = document.getElementById('btnDownloadQris');
-      qrisImg.src = config.qrisImage;
-      downloadBtn.href = config.qrisImage;
-
-      const order = getActiveOrder();
-      if (order && order.status !== 'reset') {
-        showStepWaiting(order);
-      }
+      document.getElementById('qrisImageDisplay').src = currentConfig.qrisImage;
+      document.getElementById('btnDownloadQris').href = currentConfig.qrisImage;
     }
 
     function renderServiceCards() {
-      const config = getConfig();
       const container = document.getElementById('serviceContainer');
       container.innerHTML = '';
 
-      Object.keys(config.services).forEach(key => {
-        const s = config.services[key];
+      Object.keys(currentConfig.services).forEach(key => {
+        const s = currentConfig.services[key];
         if (s.active) {
           const isSelected = selectedServiceKey === key;
           const card = document.createElement('div');
@@ -299,8 +305,7 @@
     }
 
     function updateSummary() {
-      const config = getConfig();
-      const s = config.services[selectedServiceKey];
+      const s = currentConfig.services[selectedServiceKey];
       if (s) {
         document.getElementById('summaryServiceName').innerText = s.name;
         document.getElementById('summaryTotalPrice').innerText = "Rp " + s.price.toLocaleString('id-ID');
@@ -330,8 +335,7 @@
       const receiptInput = document.getElementById('inputReceiptFile');
       const username = document.getElementById('inputUsername').value.trim();
       const password = document.getElementById('inputPassword').value.trim();
-      const config = getConfig();
-      const service = config.services[selectedServiceKey];
+      const service = currentConfig.services[selectedServiceKey];
 
       const processOrderSave = (receiptData) => {
         const newOrder = {
@@ -345,8 +349,11 @@
           unlockProofImage: null
         };
 
-        localStorage.setItem('jostore_active_order', JSON.stringify(newOrder));
-        showStepWaiting(newOrder);
+        db.collection("jostore").doc("activeOrder").set(newOrder).then(() => {
+          showStepWaiting(newOrder);
+        }).catch(err => {
+          alert("Gagal mengirim pesanan: " + err.message);
+        });
       };
 
       if (receiptInput.files && receiptInput.files[0]) {
@@ -374,13 +381,13 @@
         statusBox.className = "bg-amber-950/20 border border-amber-500/40 p-5 rounded-2xl space-y-3";
         statusIcon.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-3xl text-amber-400"></i>`;
         statusTitle.innerText = "Menunggu Konfirmasi Dana";
-        statusDesc.innerText = "Bukti pembayaran Anda sudah diverifikasi admin. Harap tunggu sebentar di halaman ini.";
+        statusDesc.innerText = "Bukti pembayaran Anda sudah dikirim. Admin Jostore sedang memeriksa dana masuk.";
         resultBox.classList.add('hidden');
       } else if (order.status === 'payment_confirmed') {
         statusBox.className = "bg-blue-950/20 border border-blue-500/40 p-5 rounded-2xl space-y-3";
         statusIcon.innerHTML = `<i class="fa-solid fa-gear fa-spin text-3xl text-blue-400"></i>`;
         statusTitle.innerText = "Dana Diterima - Sedang Dikerjakan";
-        statusDesc.innerText = "Pembayaran dikonfirmasi! Admin sedang melakukan unlock pada akun Roblox Anda. Jangan login ke akun terlebih dahulu.";
+        statusDesc.innerText = "Pembayaran dikonfirmasi! Admin sedang melakukan unlock pada akun Roblox Anda.";
         resultBox.classList.add('hidden');
       } else if (order.status === 'unlocked') {
         statusBox.className = "bg-green-950/20 border border-green-500/40 p-5 rounded-2xl space-y-3";
@@ -390,7 +397,7 @@
         
         if (order.unlockProofImage) {
           unlockImg.src = order.unlockProofImage;
-          resultBox.classList.add('hidden');
+          resultBox.classList.remove('hidden');
         }
       }
     }
@@ -408,17 +415,12 @@
     }
 
     function resetCustomerView() {
-      localStorage.removeItem('jostore_active_order');
-      location.reload();
+      db.collection("jostore").doc("activeOrder").set({ status: 'reset' }).then(() => {
+        location.reload();
+      });
     }
 
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'jostore_config' || e.key === 'jostore_active_order') {
-        initBuyerApp();
-      }
-    });
-
-    window.onload = initBuyerApp;
+    window.onload = initBuyerAppUI;
   </script>
 </body>
 </html>
