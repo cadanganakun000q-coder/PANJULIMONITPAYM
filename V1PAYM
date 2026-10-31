@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jostore - Layanan Unlock Roblox</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #f3e5ab 0%, #d4af37 50%, #996515 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-border-glow {
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+    }
+    .modal-active { display: flex !important; }
+  </style>
+</head>
+<body class="bg-[#0a0a0d] text-gray-100 min-h-screen p-4 md:p-8 flex justify-center items-center relative overflow-x-hidden">
+
+  <!-- Glow Background Accent -->
+  <div class="fixed -top-40 -left-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed -bottom-40 -right-40 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-md w-full bg-[#121218]/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-amber-500/30 p-6 md:p-8 relative gold-border-glow z-10">
+    
+    <!-- Brand Header with Logo -->
+    <div class="flex flex-col items-center text-center pb-6 border-b border-amber-500/20 mb-6">
+      <div class="relative mb-3">
+        <div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-tr from-amber-600 via-yellow-300 to-amber-700 shadow-lg shadow-amber-500/20">
+          <div class="w-full h-full bg-[#0a0a0d] rounded-full flex items-center justify-center p-1">
+            <div class="w-full h-full rounded-full border border-amber-500/40 flex items-center justify-center text-amber-400 font-extrabold text-2xl tracking-tighter">
+              JS
+            </div>
+          </div>
+        </div>
+      </div>
+      <h1 class="text-2xl font-black tracking-wider gold-gradient-text">JOSTORE</h1>
+      <p class="text-xs text-amber-200/60 font-medium tracking-wide">ROBLOX UNLOCK CAPTCHA & BIOMETRIC</p>
+      
+      <!-- Store Status Badge -->
+      <div id="statusStoreBadge" class="mt-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-amber-500/10 text-amber-300 border border-amber-500/30">
+        ● Store ONLINE
+      </div>
+    </div>
+
+    <!-- Offline Store Notice -->
+    <div id="offlineNotice" class="hidden text-center py-10 space-y-3">
+      <i class="fa-solid fa-moon text-4xl text-amber-500/40 animate-pulse"></i>
+      <h2 class="text-lg font-bold text-amber-200">Layanan Sedang Offline</h2>
+      <p class="text-xs text-gray-400">Admin sedang tidak aktif bertugas. Silakan pesan kembali saat status toko kembali Online.</p>
+    </div>
+
+    <!-- App Body Container -->
+    <div id="appBody" class="space-y-6">
+
+      <!-- STEP 1: FORM DATA AKUN & LAYANAN -->
+      <div id="stepForm" class="space-y-5">
+        
+        <div>
+          <label class="block text-xs font-semibold text-amber-300/80 mb-2 uppercase tracking-wider">1. Data Akun Roblox</label>
+          <div class="space-y-3">
+            <div>
+              <span class="text-[11px] text-gray-400">Username Roblox</span>
+              <input type="text" id="inputUsername" placeholder="Masukkan Username Roblox" class="w-full bg-[#0a0a0d] border border-amber-500/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 text-amber-100 placeholder-gray-600 transition">
+            </div>
+            <div>
+              <span class="text-[11px] text-gray-400">Password Roblox</span>
+              <input type="password" id="inputPassword" placeholder="Masukkan Password Akun" class="w-full bg-[#0a0a0d] border border-amber-500/30 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-400 text-amber-100 placeholder-gray-600 transition">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-amber-300/80 mb-2 uppercase tracking-wider">2. Pilih Jenis Layanan</label>
+          <div class="space-y-2.5" id="serviceContainer">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-amber-300/80 mb-2 uppercase tracking-wider">3. Metode Pembayaran</label>
+          <div class="bg-gradient-to-r from-amber-950/30 to-[#0a0a0d] border border-amber-500/40 rounded-xl p-3.5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400">
+                <i class="fa-solid fa-qrcode text-xl"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-amber-100">QRIS All Payment</p>
+                <p class="text-[10px] text-gray-400">BCA, Mandiri, DANA, GoPay, ShopeePay, OVO</p>
+              </div>
+            </div>
+            <i class="fa-solid fa-circle-check text-amber-400 text-lg"></i>
+          </div>
+        </div>
+
+        <!-- Price Summary Card -->
+        <div class="bg-[#0a0a0d] p-4 rounded-xl border border-amber-500/20 space-y-2">
+          <div class="flex justify-between text-xs text-gray-400">
+            <span>Layanan Dipilih:</span>
+            <span id="summaryServiceName" class="text-amber-200 font-medium">-</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-white pt-2 border-t border-amber-500/10">
+            <span>Total Pembayaran:</span>
+            <span id="summaryTotalPrice" class="gold-gradient-text text-base">Rp 0</span>
+          </div>
+        </div>
+
+        <button onclick="submitOrderForm()" class="w-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 hover:brightness-110 text-gray-950 font-extrabold py-3.5 rounded-xl shadow-lg shadow-amber-600/20 transition uppercase tracking-wider text-xs">
+          Lanjut ke Pembayaran <i class="fa-solid fa-arrow-right ml-1"></i>
+        </button>
+      </div>
+
+      <!-- STEP 2: QRIS PAYMENT & PROOF UPLOAD -->
+      <div id="stepPayment" class="hidden space-y-5 text-center">
+        <button onclick="backToForm()" class="text-xs text-amber-400 hover:underline inline-flex items-center mb-1">
+          <i class="fa-solid fa-arrow-left mr-1"></i> Ubah Data Akun / Layanan
+        </button>
+
+        <div class="bg-[#0a0a0d] p-5 rounded-2xl border border-amber-500/30 space-y-4">
+          <p class="text-xs text-gray-400">Scan QRIS menggunakan aplikasi e-wallet / mobile banking Anda</p>
+          
+          <div class="flex justify-center">
+            <div class="p-2 bg-white rounded-xl shadow-xl border border-amber-400/40">
+              <img id="qrisImageDisplay" src="https://via.placeholder.com/250x250?text=QRIS+Jostore" alt="QRIS Pembayaran" class="w-52 h-52 object-contain rounded-lg">
+            </div>
+          </div>
+
+          <!-- Download Button -->
+          <a id="btnDownloadQris" href="#" download="QRIS_Jostore.png" class="inline-flex items-center space-x-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold px-4 py-2 rounded-lg border border-amber-500/30 transition">
+            <i class="fa-solid fa-download"></i>
+            <span>Download Gambar QRIS</span>
+          </a>
+
+          <div class="pt-3 border-t border-amber-500/10">
+            <p class="text-[11px] text-gray-400">Total Yang Harus Dibayar:</p>
+            <p id="payAmountDisplay" class="text-2xl font-black gold-gradient-text">Rp 0</p>
+          </div>
+        </div>
+
+        <div class="text-left space-y-2">
+          <label class="block text-xs font-semibold text-amber-300/80">Upload Bukti Screenshot Pembayaran</label>
+          <input type="file" id="inputReceiptFile" accept="image/*" class="block w-full text-xs text-gray-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30 bg-[#0a0a0d] rounded-xl border border-amber-500/30">
+        </div>
+
+        <button onclick="confirmPaymentSent()" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:brightness-110 text-white font-bold py-3.5 rounded-xl shadow-lg transition text-xs tracking-wider uppercase">
+          <i class="fa-solid fa-paper-plane mr-1"></i> Konfirmasi Sudah Bayar
+        </button>
+      </div>
+
+      <!-- STEP 3: WAITING & UNLOCK PROOF VIEW -->
+      <div id="stepWaiting" class="hidden text-center py-4 space-y-5">
+        
+        <div id="statusBox" class="bg-amber-950/20 border border-amber-500/40 p-5 rounded-2xl space-y-3">
+          <div id="statusIcon" class="inline-block p-3 bg-amber-500/10 rounded-full text-amber-400">
+            <i class="fa-solid fa-spinner fa-spin text-3xl"></i>
+          </div>
+          <h2 id="statusTitle" class="text-base font-bold text-amber-200">Menunggu Konfirmasi Dana</h2>
+          <p id="statusDesc" class="text-xs text-gray-400 leading-relaxed">
+            Bukti pembayaran Anda sudah terkirim. Admin Jostore sedang memeriksa dana masuk. Silakan tetap di halaman ini.
+          </p>
+        </div>
+
+        <!-- Result Screenshot Section -->
+        <div id="resultBox" class="hidden bg-[#0a0a0d] p-4 rounded-2xl border border-green-500/40 space-y-3">
+          <div class="flex items-center justify-between text-left">
+            <div>
+              <p class="text-xs text-green-400 font-bold uppercase tracking-wider">● Akun Berhasil Di-Unlock</p>
+              <p class="text-[11px] text-gray-400">Bukti tangkapan layar pengerjaan admin:</p>
+            </div>
+            <span class="text-[10px] text-amber-400/60">Klik gambar untuk zoom</span>
+          </div>
+
+          <div class="cursor-pointer group relative overflow-hidden rounded-xl border border-amber-500/30" onclick="openImageModal()">
+            <img id="unlockProofImage" src="" alt="Bukti Unlock" class="w-full max-h-60 object-cover group-hover:scale-105 transition duration-300">
+            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-amber-300 text-xs font-semibold transition">
+              <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Klik untuk Memperbesar
+            </div>
+          </div>
+        </div>
+
+        <button onclick="resetCustomerView()" class="text-xs text-gray-500 hover:text-amber-400 underline transition">
+          Buat Pesanan Baru
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal Popup Zoom Image -->
+  <div id="imageModal" class="fixed inset-0 bg-black/90 z-50 hidden items-center justify-center p-4" onclick="closeImageModal()">
+    <div class="relative max-w-3xl w-full max-h-screen flex flex-col items-center">
+      <button onclick="closeImageModal()" class="absolute -top-10 right-0 text-white text-lg bg-gray-800 p-2 rounded-full border border-gray-700">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="modalImageTarget" src="" class="max-w-full max-h-[85vh] rounded-lg border border-amber-500/40 shadow-2xl object-contain" onclick="event.stopPropagation()">
+    </div>
+  </div>
+
+  <script>
+    const DEFAULT_CONFIG = {
+      isStoreOnline: true,
+      qrisImage: "https://via.placeholder.com/300x300?text=QRIS+Jostore+AllPayment",
+      services: {
+        beranda: { name: "Unlock Captcha Home / Beranda", price: 15000, active: true },
+        ingame: { name: "Captcha In Game", price: 20000, active: true },
+        facelock: { name: "Facelock / Verifikasi Wajah", price: 35000, active: true }
+      }
+    };
+
+    let selectedServiceKey = "beranda";
+
+    function getConfig() {
+      const saved = localStorage.getItem('jostore_config');
+      return saved ? JSON.parse(saved) : DEFAULT_CONFIG;
+    }
+
+    function getActiveOrder() {
+      const saved = localStorage.getItem('jostore_active_order');
+      return saved ? JSON.parse(saved) : null;
+    }
+
+    function initBuyerApp() {
+      const config = getConfig();
+
+      const offlineNotice = document.getElementById('offlineNotice');
+      const appBody = document.getElementById('appBody');
+      const statusBadge = document.getElementById('statusStoreBadge');
+
+      if (!config.isStoreOnline) {
+        statusBadge.className = "mt-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-red-950/40 text-red-400 border border-red-500/30";
+        statusBadge.innerHTML = "● Store OFFLINE";
+        offlineNotice.classList.remove('hidden');
+        appBody.classList.add('hidden');
+        return;
+      } else {
+        statusBadge.className = "mt-3 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase bg-amber-500/10 text-amber-300 border border-amber-500/30";
+        statusBadge.innerHTML = "● Store ONLINE";
+        offlineNotice.classList.add('hidden');
+        appBody.classList.remove('hidden');
+      }
+
+      // Validasi layanan aktif
+      if (!config.services[selectedServiceKey] || !config.services[selectedServiceKey].active) {
+        const activeKeys = Object.keys(config.services).filter(k => config.services[k].active);
+        if (activeKeys.length > 0) {
+          selectedServiceKey = activeKeys[0];
+        }
+      }
+
+      renderServiceCards();
+      updateSummary();
+
+      const qrisImg = document.getElementById('qrisImageDisplay');
+      const downloadBtn = document.getElementById('btnDownloadQris');
+      qrisImg.src = config.qrisImage;
+      downloadBtn.href = config.qrisImage;
+
+      const order = getActiveOrder();
+      if (order && order.status !== 'reset') {
+        showStepWaiting(order);
+      }
+    }
+
+    function renderServiceCards() {
+      const config = getConfig();
+      const container = document.getElementById('serviceContainer');
+      container.innerHTML = '';
+
+      Object.keys(config.services).forEach(key => {
+        const s = config.services[key];
+        if (s.active) {
+          const isSelected = selectedServiceKey === key;
+          const card = document.createElement('div');
+          card.className = `p-3.5 rounded-xl border cursor-pointer transition flex justify-between items-center ${
+            isSelected ? 'bg-amber-500/10 border-amber-400' : 'bg-[#0a0a0d] border-amber-500/20 hover:border-amber-500/40'
+          }`;
+          card.onclick = () => selectService(key);
+          card.innerHTML = `
+            <div>
+              <p class="text-xs font-bold ${isSelected ? 'text-amber-200' : 'text-gray-200'}">${s.name}</p>
+              <p class="text-[11px] text-gray-400">Rp ${s.price.toLocaleString('id-ID')}</p>
+            </div>
+            <i class="fa-solid ${isSelected ? 'fa-circle-dot text-amber-400' : 'fa-circle text-gray-700'} text-sm"></i>
+          `;
+          container.appendChild(card);
+        }
+      });
+    }
+
+    function selectService(key) {
+      selectedServiceKey = key;
+      renderServiceCards();
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const config = getConfig();
+      const s = config.services[selectedServiceKey];
+      if (s) {
+        document.getElementById('summaryServiceName').innerText = s.name;
+        document.getElementById('summaryTotalPrice').innerText = "Rp " + s.price.toLocaleString('id-ID');
+        document.getElementById('payAmountDisplay').innerText = "Rp " + s.price.toLocaleString('id-ID');
+      }
+    }
+
+    function submitOrderForm() {
+      const username = document.getElementById('inputUsername').value.trim();
+      const password = document.getElementById('inputPassword').value.trim();
+
+      if (!username || !password) {
+        alert("Harap isi Username dan Password Roblox Anda.");
+        return;
+      }
+
+      document.getElementById('stepForm').classList.add('hidden');
+      document.getElementById('stepPayment').classList.remove('hidden');
+    }
+
+    function backToForm() {
+      document.getElementById('stepPayment').classList.add('hidden');
+      document.getElementById('stepForm').classList.remove('hidden');
+    }
+
+    function confirmPaymentSent() {
+      const receiptInput = document.getElementById('inputReceiptFile');
+      const username = document.getElementById('inputUsername').value.trim();
+      const password = document.getElementById('inputPassword').value.trim();
+      const config = getConfig();
+      const service = config.services[selectedServiceKey];
+
+      const processOrderSave = (receiptData) => {
+        const newOrder = {
+          id: "ORD-" + Date.now().toString().slice(-6),
+          username: username,
+          password: password,
+          serviceName: service.name,
+          amount: service.price,
+          receiptImage: receiptData,
+          status: 'pending',
+          unlockProofImage: null
+        };
+
+        localStorage.setItem('jostore_active_order', JSON.stringify(newOrder));
+        showStepWaiting(newOrder);
+      };
+
+      if (receiptInput.files && receiptInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => processOrderSave(e.target.result);
+        reader.readAsDataURL(receiptInput.files[0]);
+      } else {
+        processOrderSave("https://via.placeholder.com/300x400?text=Bukti+Transfer");
+      }
+    }
+
+    function showStepWaiting(order) {
+      document.getElementById('stepForm').classList.add('hidden');
+      document.getElementById('stepPayment').classList.add('hidden');
+      document.getElementById('stepWaiting').classList.remove('hidden');
+
+      const statusBox = document.getElementById('statusBox');
+      const statusIcon = document.getElementById('statusIcon');
+      const statusTitle = document.getElementById('statusTitle');
+      const statusDesc = document.getElementById('statusDesc');
+      const resultBox = document.getElementById('resultBox');
+      const unlockImg = document.getElementById('unlockProofImage');
+
+      if (order.status === 'pending') {
+        statusBox.className = "bg-amber-950/20 border border-amber-500/40 p-5 rounded-2xl space-y-3";
+        statusIcon.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-3xl text-amber-400"></i>`;
+        statusTitle.innerText = "Menunggu Konfirmasi Dana";
+        statusDesc.innerText = "Bukti pembayaran Anda sudah diverifikasi admin. Harap tunggu sebentar di halaman ini.";
+        resultBox.classList.add('hidden');
+      } else if (order.status === 'payment_confirmed') {
+        statusBox.className = "bg-blue-950/20 border border-blue-500/40 p-5 rounded-2xl space-y-3";
+        statusIcon.innerHTML = `<i class="fa-solid fa-gear fa-spin text-3xl text-blue-400"></i>`;
+        statusTitle.innerText = "Dana Diterima - Sedang Dikerjakan";
+        statusDesc.innerText = "Pembayaran dikonfirmasi! Admin sedang melakukan unlock pada akun Roblox Anda. Jangan login ke akun terlebih dahulu.";
+        resultBox.classList.add('hidden');
+      } else if (order.status === 'unlocked') {
+        statusBox.className = "bg-green-950/20 border border-green-500/40 p-5 rounded-2xl space-y-3";
+        statusIcon.innerHTML = `<i class="fa-solid fa-circle-check text-3xl text-green-400"></i>`;
+        statusTitle.innerText = "Unlock Akun Selesai!";
+        statusDesc.innerText = "Akun Roblox Anda telah berhasil di-unlock. Silakan cek bukti pengerjaan admin di bawah ini.";
+        
+        if (order.unlockProofImage) {
+          unlockImg.src = order.unlockProofImage;
+          resultBox.classList.add('hidden');
+        }
+      }
+    }
+
+    function openImageModal() {
+      const src = document.getElementById('unlockProofImage').src;
+      if (src) {
+        document.getElementById('modalImageTarget').src = src;
+        document.getElementById('imageModal').classList.add('modal-active');
+      }
+    }
+
+    function closeImageModal() {
+      document.getElementById('imageModal').classList.remove('modal-active');
+    }
+
+    function resetCustomerView() {
+      localStorage.removeItem('jostore_active_order');
+      location.reload();
+    }
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'jostore_config' || e.key === 'jostore_active_order') {
+        initBuyerApp();
+      }
+    });
+
+    window.onload = initBuyerApp;
+  </script>
+</body>
+</html>
